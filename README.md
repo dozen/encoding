@@ -23,5 +23,4 @@ e.EncodeToString([]byte("Hello, world!")) //=>kZtけふ8ぢg7どぺmふQお
 en := base128.NewEncoding(base128.StdEncoding)
 
 fmt.Printf("%s\n", en.Decode("kZtけふ8ぢg7どぺmふQお")) //=>Hello, world!
-
 ```
