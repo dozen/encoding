@@ -7,13 +7,13 @@ import (
 const (
 	encodeStd = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789あいうえおかきくけこさしすせそざじずぜぞたちつてとだぢづでどなにぬねのはひふへほばびぶべぼぱぴぷぺぽまみむめもやゆよらりるれろわをん"
 	NormShift = 48
-	EncShift = 49
+	EncShift  = 49
 )
 
 const StdEncoding = encodeStd
 
 type Encoding struct {
-	encode []rune
+	encode    []rune
 	decodeMap map[int32]byte
 }
 
@@ -35,7 +35,7 @@ func NewEncoding(encoder string) *Encoding {
 }
 
 func (e *Encoding) EncodedLen(n int) int {
-	return n * 8 / 7 + 1
+	return n*8/7 + 1
 }
 
 func (e *Encoding) DecodedLen(src string) int {
@@ -52,7 +52,7 @@ func (e *Encoding) EncodeToString(src []byte) string {
 	for si < n {
 		var val uint
 		for i, sh := 0, uint(NormShift); i < 7; i++ {
-			val |= uint(src[si + i]) << sh
+			val |= uint(src[si+i]) << sh
 			sh -= 8
 		}
 
@@ -71,7 +71,7 @@ func (e *Encoding) EncodeToString(src []byte) string {
 
 	var val uint
 	for i, sh := 0, uint(NormShift); i < remain; i++ {
-		val |= uint(src[si + i]) << sh
+		val |= uint(src[si+i]) << sh
 		sh -= 8
 	}
 
@@ -121,7 +121,7 @@ func (e *Encoding) Decode(srcStr string) []byte {
 		sh -= 7
 	}
 
-	for i, sh := 0, uint(NormShift); dstlen + i < dstSize; i++ {
+	for i, sh := 0, uint(NormShift); dstlen+i < dstSize; i++ {
 		dst[dstlen+i] = byte(val >> sh)
 		sh -= 8
 	}
