@@ -50,9 +50,9 @@ func (e *Encoding) EncodeToString(src []byte) string {
 	si := 0
 	n := (len(src) / 7) * 7
 	for si < n {
-		var val uint
+		var val uint64
 		for i, sh := 0, uint(NormShift); i < 7; i++ {
-			val |= uint(src[si+i]) << sh
+			val |= uint64(src[si+i]) << sh
 			sh -= 8
 		}
 
@@ -69,9 +69,9 @@ func (e *Encoding) EncodeToString(src []byte) string {
 		return string(dst)
 	}
 
-	var val uint
+	var val uint64
 	for i, sh := 0, uint(NormShift); i < remain; i++ {
-		val |= uint(src[si+i]) << sh
+		val |= uint64(src[si+i]) << sh
 		sh -= 8
 	}
 
@@ -96,7 +96,7 @@ func (e *Encoding) Decode(srcStr string) []byte {
 
 		bufi++
 		if bufi == 8 {
-			var val uint
+			var val uint64
 			for i, sh := 0, uint(EncShift); i < 8; i++ {
 				val |= uint(dbuf[i]) << sh
 				sh -= 7
@@ -115,9 +115,9 @@ func (e *Encoding) Decode(srcStr string) []byte {
 		return dst
 	}
 
-	var val uint
+	var val uint64
 	for i, sh := 0, uint(EncShift); i < 8; i++ {
-		val |= uint(dbuf[i]) << sh
+		val |= uint64(dbuf[i]) << sh
 		sh -= 7
 	}
 
