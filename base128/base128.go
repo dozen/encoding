@@ -35,7 +35,7 @@ func NewEncoding(encoder string) *Encoding {
 }
 
 func (e *Encoding) EncodedLen(n int) int {
-	return n*8/7 + 1
+	return (n*8 + 6) / 7
 }
 
 func (e *Encoding) DecodedLen(src string) int {
@@ -98,7 +98,7 @@ func (e *Encoding) Decode(srcStr string) []byte {
 		if bufi == 8 {
 			var val uint64
 			for i, sh := 0, uint(EncShift); i < 8; i++ {
-				val |= uint(dbuf[i]) << sh
+				val |= uint64(dbuf[i]) << sh
 				sh -= 7
 			}
 

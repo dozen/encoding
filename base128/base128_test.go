@@ -1,25 +1,25 @@
-package base256
+package base128
 
 import (
 	"bytes"
 	"testing"
 )
 
-func TestEncodingAndDecoding(t *testing.T) {
-	src := []byte("Hello, World!")
+func TestSet(t *testing.T) {
+	str := []byte("T.I.A. This is Africa.")
+
+	for i, _ := range str {
+		EncodingAndDecoding(str[:i+1], t)
+	}
+}
+
+func EncodingAndDecoding(src []byte, t *testing.T) {
 	t.Logf("Original:\t%v", src)
 
 	encoder := NewEncoding(StdEncoding)
 
 	encodedData := encoder.EncodeToString(src)
 	t.Logf("Encoded:\t%s", encodedData)
-
-	encodedLen := encoder.EncodedLen(len(src))
-	decodedLen := encoder.DecodedLen(encodedData)
-	if encodedLen != decodedLen {
-		t.Errorf("No Mached Length. encoded len: %d, decoded len: %d", encodedLen, decodedLen)
-		t.FailNow()
-	}
 
 	decodedData := encoder.Decode(encodedData)
 	t.Logf("Decoded:\t%v", decodedData)
