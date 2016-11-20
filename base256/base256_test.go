@@ -22,7 +22,7 @@ func TestEncodingAndDecoding(t *testing.T) {
 	}
 
 	decodedData := encoder.Decode(encodedData)
-	t.Errorf("Decoded:\t%v", decodedData)
+	t.Logf("Decoded:\t%v", decodedData)
 
 	if bytes.Compare(src, decodedData) != 0 {
 		t.Errorf("No Matched Original Data.")
