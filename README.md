@@ -10,16 +10,13 @@ import "github.com/dozen/encoding/base128"
 
 ### encode
 ```
-e := base128.NewEncoding(base128.StdEncoding)
 
-e.EncodeToString([]byte("Hello, world!")) //=>kZtけふ8ぢg7どぺmふQお
+base128.StdEncoding.EncodeToString([]byte("Hello, world!")) //=>kZtけふ8ぢg7どぺmふQお
 ```
 
 ### decode
 ```
-e := base128.NewEncoding(base128.StdEncoding)
-
-fmt.Printf("%s\n", e.Decode("kZtけふ8ぢg7どぺmふQお")) //=>Hello, world!
+base128.StdEncoding.DecodeString("kZtけふ8ぢg7どぺmふQお") //=>Hello, world!
 ```
 
 ## base256

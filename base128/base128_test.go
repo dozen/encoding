@@ -15,13 +15,16 @@ func TestSet(t *testing.T) {
 
 func EncodingAndDecoding(src []byte, t *testing.T) {
 	t.Logf("Original:\t%v", src)
-
-	encoder := NewEncoding(StdEncoding)
+	encoder := StdEncoding
 
 	encodedData := encoder.EncodeToString(src)
 	t.Logf("Encoded:\t%s", encodedData)
 
-	decodedData := encoder.Decode(encodedData)
+	decodedData, err := encoder.DecodeString(encodedData)
+	if err != nil {
+		t.Errorf(err.Error())
+		t.FailNow()
+	}
 	t.Logf("Decoded:\t%v", decodedData)
 
 	if bytes.Compare(src, decodedData) != 0 {
