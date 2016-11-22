@@ -1,14 +1,14 @@
 package base128
 
 import (
-	"unicode/utf8"
 	"io"
+	"unicode/utf8"
 )
 
 const (
 	encodeStd = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789あいうえおかきくけこさしすせそざじずぜぞたちつてとだぢづでどなにぬねのはひふへほばびぶべぼぱぴぷぺぽまみむめもやゆよらりるれろわをん"
 	normShift = 48
-	encShift = 49
+	encShift  = 49
 )
 
 var StdEncoding = NewEncoding(encodeStd)
@@ -97,8 +97,12 @@ func (e *Encoding) DecodeString(s string) ([]byte, error) {
 	return dst, nil
 }
 
-func (e *Encoding) decode(dst []byte, src []rune) {
-	dstSize := len(dst)
+func (e *Encoding) Decode(dst []byte, src []rune) int {
+	return e.decode(dst, src)
+}
+
+func (e *Encoding) decode(dst []byte, src []rune) (n int) {
+	n = len(dst)
 	bufi := 0
 	dstlen := 0
 	var dbuf [8]byte
@@ -132,7 +136,7 @@ func (e *Encoding) decode(dst []byte, src []rune) {
 		sh -= 7
 	}
 
-	for i, sh := 0, uint(normShift); dstlen+i < dstSize; i++ {
+	for i, sh := 0, uint(normShift); dstlen+i < n; i++ {
 		dst[dstlen+i] = byte(val >> sh)
 		sh -= 8
 	}
@@ -141,26 +145,65 @@ func (e *Encoding) decode(dst []byte, src []rune) {
 }
 
 type encoder struct {
-	err error
-	enc *Encoding
-	w io.Writer
-	buf [8]byte
+	err  error
+	enc  *Encoding
+	w    io.Writer
+	buf  [7]byte
 	nbuf int
-	out [1024]byte
+	out  [1024]rune
 }
 
 func NewEncoder(enc *Encoding, w io.Writer) io.WriteCloser {
 	return &encoder{enc: enc, w: w}
 }
 
-func (e *encoder)Write(p []byte) (n int, err error) {
-	//未実装
-	n = 0
-	err = nil
+func (e *encoder) Write(p []byte) (n int, err error) {
+	if e.nbuf > 0 {
+		var i int
+		for i = 0; i < len(p) && e.nbuf < 7; i++ {
+			e.buf[e.nbuf] = p[i]
+			e.nbuf++
+		}
+		n += i
+		p = p[i:]
+		if e.nbuf < 7 {
+			return
+		}
+		e.enc.Encode(e.out[:], e.buf[:])
+
+		if _, e.err = e.w.Write([]byte(string(e.out[:8]))); e.err != nil {
+			return n, e.err
+		}
+		e.nbuf = 0
+	}
+
+	for len(p) >= 7 {
+		nn := len(e.out) / 8 * 7
+		if nn > len(p) {
+			nn = len(p)
+			nn -= nn % 7
+		}
+		e.enc.Encode(e.out[:], p[:nn])
+		if _, e.err = e.w.Write([]byte(string(e.out[0 : nn/7*8]))); e.err != nil {
+			return n, e.err
+		}
+		n += nn
+		p = p[nn:]
+	}
+
+	for i := 0; i < len(p); i++ {
+		e.buf[i] = p[i]
+	}
+	e.nbuf = len(p)
+	n += len(p)
 	return
 }
 
 func (e *encoder) Close() error {
-	//未実装
-	return nil
+	if e.err == nil && e.nbuf > 0 {
+		e.enc.Encode(e.out[:], e.buf[:e.nbuf])
+		_, e.err = e.w.Write([]byte(string(e.out[:e.enc.EncodedLen(e.nbuf)])))
+		e.nbuf = 0
+	}
+	return e.err
 }
