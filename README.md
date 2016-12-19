@@ -1,6 +1,6 @@
+# encoding
 [![Build Status](https://travis-ci.org/dozen/encoding.svg?branch=master)](https://travis-ci.org/dozen/encoding)
 
-# encoding
 ## base128
 base128 using alphabet, number, hiragana.
 
